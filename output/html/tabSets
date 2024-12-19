@@ -1,0 +1,70 @@
+---
+title: "Creating Quarto Tabs: Two Methods"
+---
+
+Sources used to help make the template
+
+[Programmatic Tabsets in Quarto: Josh Cowley](https://josh.quarto.pub/posts/2022-09-29-quarto-tabsets/2022-09-29-quarto-tabsets.html)
+
+[Stackoverflow Programatically generate tabset panels of datatables in Quarto: Stefan](https://stackoverflow.com/questions/74707808/programatically-generate-tabset-panels-of-datatables-in-quarto)
+
+
+
+```{r}
+#| include: true
+
+# Create the initial data
+df <- data.frame(
+  x = c("location a", "location b", "location c"),
+  y = c("type 1", "type 1", "type 1", "type 2", "type 2", "type 2"),
+  z = c(10, 20, 30, 100, 200, 300)
+)
+```
+
+### Option 1 (More Static)
+::: panel-tabset
+#### Type 1
+
+```{r}
+
+# Create the initial data
+DT::datatable(df |> dplyr::filter(y == "type 1"))
+```
+
+
+#### Type 2
+
+```{r}
+
+# Create the initial data
+DT::datatable(df |> dplyr::filter(y == "type 2"))
+
+```
+
+:::
+
+
+### Option 2 (More Programatic) 
+
+Please reference source code to see the for loop that explains how this creates multiple tabs
+
+```{r}
+#| fig-width: 8
+#| fig-height: 4
+#| warning: false
+#| include: true
+#| results: asis
+
+     # Split data by Category
+     split_data <- split(df, df$y)
+
+     # Generate tabset panels
+     cat("::: {.panel-tabset}\n")
+     for (y in names(split_data)) {
+       cat(sprintf("## %s\n\n", y))
+      print(htmltools::tagList(DT::datatable(split_data[[y]])))
+     }
+     cat(":::\n")
+
+```
+
